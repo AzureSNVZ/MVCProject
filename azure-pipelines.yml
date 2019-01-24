@@ -3,7 +3,13 @@ queue:
   demands: 
   - msbuild
   - visualstudio
+  - java
 
+#Your build pipeline references an undefined variable named ‘Parameters.solution’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named ‘Parameters.solution’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references the ‘BuildPlatform’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
+#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
+#Your build pipeline references the ‘BuildConfiguration’ variable, which you’ve selected to be settable at queue time. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab, and then select the option to make it settable at queue time. See https://go.microsoft.com/fwlink/?linkid=865971
 steps:
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.4.1'
@@ -17,6 +23,18 @@ steps:
     restoreSolution: '$(Parameters.solution)'
 
 
+- task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+  displayName: 'Prepare analysis on SonarCloud'
+  inputs:
+    SonarCloud: 'DevOps_1'
+
+    organization: 'kiransonawane2003-github'
+
+    projectKey: 'KiranSonawane2003_MVCProject'
+
+    projectName: MVCProject
+
+
 - task: VSBuild@1
   displayName: 'Build solution **\*.sln'
   inputs:
@@ -25,6 +43,10 @@ steps:
     platform: '$(BuildPlatform)'
 
     configuration: '$(BuildConfiguration)'
+
+
+- task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+  displayName: 'Run Code Analysis'
 
 
 - task: PublishSymbols@2
